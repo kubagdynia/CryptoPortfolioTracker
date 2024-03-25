@@ -25,4 +25,8 @@
     </None>
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\CryptoPortfolioTracker.Core\CryptoPortfolioTracker.Core.csproj" />
+  </ItemGroup>
+
 </Project>

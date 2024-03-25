@@ -1,4 +1,5 @@
 ﻿using CryptoPortfolioTracker.App;
+using CryptoPortfolioTracker.Core.Extensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
@@ -35,5 +36,6 @@ void ConfigureServices()
         builder.AddSerilog();
     });
     
+    services.RegisterCore(configuration);
     services.AddTransient<App>();
 }
