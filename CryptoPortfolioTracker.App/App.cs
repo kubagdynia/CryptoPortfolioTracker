@@ -1,18 +1,22 @@
-using CryptoPortfolioTracker.Core.Configuration;
 using CryptoPortfolioTracker.Core.Clients;
-using Microsoft.Extensions.Options;
+using CryptoPortfolioTracker.Core.Extensions;
 
 namespace CryptoPortfolioTracker.App;
 
-public class App(IOptions<AppSettings> appSettings, ICoinGeckoClient coinGeckoClient)
+public class App(ICoinGeckoClient coinGeckoClient)
 {
-    private readonly AppSettings _appSettings = appSettings.Value;
-
     public async Task Run()
     {
-        Console.WriteLine($"App name: {_appSettings.Name}");
-        var ping = await coinGeckoClient.GetPingAsync();
-        Console.WriteLine(ping?.GeckoSays);
+        var price = await coinGeckoClient.GetSimplePrice(["bitcoin", "ethereum"], ["usd", "pln"]);
+
+        foreach (var item in price)
+        {
+            Console.WriteLine(item.Id);
+            Console.WriteLine(item.LastUpdatedAt);
+            var currency = item.Currencies.Currency("usd");
+            Console.WriteLine(currency?.Name);
+            Console.WriteLine(currency?.Price);
+        }
         
         await Task.CompletedTask;
     }

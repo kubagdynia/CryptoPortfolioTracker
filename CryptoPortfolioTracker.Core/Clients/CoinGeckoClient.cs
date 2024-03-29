@@ -1,59 +1,58 @@
-using System.Net.Http.Json;
-using System.Text.Json;
 using Microsoft.Extensions.Logging;
-using Polly.Timeout;
 
 namespace CryptoPortfolioTracker.Core.Clients;
 
-public class CoinGeckoClient(IHttpClientFactory clientFactory, ILogger<CoinGeckoClient> logger) : ICoinGeckoClient
+public class CoinGeckoClient(IHttpClientFactory clientFactory, ILogger<CoinGeckoClient> logger)
+    : BaseClient(clientFactory, logger), ICoinGeckoClient
 {
     private static readonly Uri ApiEndpoint = new("https://api.coingecko.com/api/v3/");
+    private static readonly Uri ProApiEndpoint = new("https://pro-api.coingecko.com/api/v3/");
+
+    protected override Uri GetApiEndpoint => ApiEndpoint;
+    protected override Uri GetProApiEndpoint => ProApiEndpoint;
 
     public async Task<Ping?> GetPingAsync(CancellationToken ct = default)
     {
         var requestUri = new Uri(ApiEndpoint, "ping");
         return await GetAsync<Ping>(requestUri, ct);
     }
-    
-    private async Task<T?> GetAsync<T>(Uri requestUri, CancellationToken ct = default)
+
+    public async Task<IList<Price>> GetSimplePrice(string[] ids, string[] currencies,
+        bool includeMarketCap = false, bool include24HrVol = false, bool include24HrChange = false,
+        bool includeLastUpdatedAt = false,
+        CancellationToken ct = default)
     {
-        var client = clientFactory.CreateClient("ClientWithoutSSLValidation");
-
-        try
+        var requestUri = CreateUrl("simple/price", new Dictionary<string, object>
         {
-            using var response = await client.GetAsync(requestUri, ct);
+            { "ids", string.Join(",", ids) },
+            { "vs_currencies", string.Join(",", currencies) },
+            { "include_market_cap", includeMarketCap },
+            { "include_24hr_vol", include24HrVol },
+            { "include_24hr_change", include24HrChange },
+            { "include_last_updated_at", includeLastUpdatedAt }
+        });
 
-            if (response.IsSuccessStatusCode)
+        var data = await GetAsync<BaseDictionary>(requestUri, ct);
+
+        if (data is null)
+        {
+            return new List<Price>();
+        }
+
+        var resultList = new List<Price>();
+
+        foreach (var (id, dictionary) in data)
+        {
+            var price = new Price
             {
-                try
-                {
-                    var ping = await response.Content.ReadFromJsonAsync<T>(cancellationToken: ct);
-                    return ping;
+                Id = id,
+                Currencies = Currency.GetCurrencies(dictionary),
+                LastUpdatedAt = dictionary.GetValueOrDefault("last_updated_at", null)
+            };
 
-                }
-                catch (NotSupportedException ex) // When content type is not valid
-                {
-                    logger.LogError(ex, $"The content type is not supported.");
-                    throw;
-                }
-                catch (JsonException ex) // Invalid JSON
-                {
-                    logger.LogError(ex, $"Invalid JSON.");
-                    throw;
-                }
-            }
-        }
-        catch (TimeoutRejectedException ex)
-        {
-            logger.LogError(ex, $"Timeout has occurred.");
-            throw;
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, $"An error occurred.");
-            throw;
+            resultList.Add(price);
         }
 
-        return await Task.FromResult<T>(default!);
+        return resultList;
     }
 }

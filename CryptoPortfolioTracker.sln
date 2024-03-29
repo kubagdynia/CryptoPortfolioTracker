@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CryptoPortfolioTracker.App"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CryptoPortfolioTracker.Core", "CryptoPortfolioTracker.Core\CryptoPortfolioTracker.Core.csproj", "{4222BB79-CD9A-481A-896A-BE9DE189A4F5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CryptoPortfolioTracker.Tests", "CryptoPortfolioTracker.Tests\CryptoPortfolioTracker.Tests.csproj", "{C37E4CD0-F165-43F9-92D8-B386936E6FB4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +26,9 @@ Global
 		{4222BB79-CD9A-481A-896A-BE9DE189A4F5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4222BB79-CD9A-481A-896A-BE9DE189A4F5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4222BB79-CD9A-481A-896A-BE9DE189A4F5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C37E4CD0-F165-43F9-92D8-B386936E6FB4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C37E4CD0-F165-43F9-92D8-B386936E6FB4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C37E4CD0-F165-43F9-92D8-B386936E6FB4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C37E4CD0-F165-43F9-92D8-B386936E6FB4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
