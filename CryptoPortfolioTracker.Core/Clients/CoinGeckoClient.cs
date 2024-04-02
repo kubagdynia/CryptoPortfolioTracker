@@ -17,6 +17,15 @@ public class CoinGeckoClient(IHttpClientFactory clientFactory, ILogger<CoinGecko
         return await GetAsync<Ping>(requestUri, ct);
     }
 
+    public async Task<Price> GetSimplePrice(string id, string currency = "usd",
+        bool includeMarketCap = false, bool include24HrVol = false, bool include24HrChange = false,
+        bool includeLastUpdatedAt = false,
+        CancellationToken ct = default)
+    {
+        return (await GetSimplePrice([id], [currency], includeMarketCap, include24HrVol,
+            include24HrChange, includeLastUpdatedAt, ct)).First();
+    }
+
     public async Task<IList<Price>> GetSimplePrice(string[] ids, string[] currencies,
         bool includeMarketCap = false, bool include24HrVol = false, bool include24HrChange = false,
         bool includeLastUpdatedAt = false,
