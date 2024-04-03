@@ -14,7 +14,7 @@ public static class ServiceCollectionExtensions
 
     public static void RegisterCore(this IServiceCollection services, IConfiguration configuration, string appConfigSectionName = AppConfigSectionName)
     {
-        IConfigurationSection appConfig = configuration.GetSection(appConfigSectionName);
+        var appConfig = configuration.GetSection(appConfigSectionName);
 
         if (!appConfig.Exists())
         {

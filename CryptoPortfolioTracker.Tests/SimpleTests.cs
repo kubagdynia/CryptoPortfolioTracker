@@ -8,7 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace CryptoPortfolioTracker.Tests;
 
-public class Tests
+public class SimpleTests
 {
     [SetUp]
     public void Setup()
@@ -130,6 +130,87 @@ public class Tests
         result.Currencies.First().MarketCap.Should().BeApproximately(1378339867472.376m, 0);
         result.Currencies.First().Vol24H.Should().BeApproximately(30300245047.661156m, 0);
         result.Currencies.First().Change24H.Should().BeApproximately(-0.646955985425542m, 0);
+    }
+    
+    [Test]
+    public async Task GetSupportedVsCurrencies_Should_Return_Correct_Data()
+    {
+        var responseContent =
+            """
+            [
+              "btc",
+              "eth",
+              "ltc",
+              "bch",
+              "bnb",
+              "eos",
+              "xrp",
+              "xlm",
+              "link",
+              "dot",
+              "yfi",
+              "usd",
+              "aed",
+              "ars",
+              "aud",
+              "bdt",
+              "bhd",
+              "bmd",
+              "brl",
+              "cad",
+              "chf",
+              "clp",
+              "cny",
+              "czk",
+              "dkk",
+              "eur",
+              "gbp",
+              "gel",
+              "hkd",
+              "huf",
+              "idr",
+              "ils",
+              "inr",
+              "jpy",
+              "krw",
+              "kwd",
+              "lkr",
+              "mmk",
+              "mxn",
+              "myr",
+              "ngn",
+              "nok",
+              "nzd",
+              "php",
+              "pkr",
+              "pln",
+              "rub",
+              "sar",
+              "sek",
+              "sgd",
+              "thb",
+              "try",
+              "twd",
+              "uah",
+              "vef",
+              "vnd",
+              "zar",
+              "xdr",
+              "xag",
+              "xau",
+              "bits",
+              "sats"
+            ]
+            """;
+
+        var httpClientFactory = CreateFakeHttpClientFactory(responseContent);
+        var serviceProvider = TestHelper.CreateServiceProvider(httpClientFactory);
+
+        var client = serviceProvider.GetRequiredService<ICoinGeckoClient>();
+        var supportedCurrencies = await client.GetSupportedVsCurrencies();
+
+        supportedCurrencies.Should().NotBeNull();
+        supportedCurrencies.Should().HaveCount(62);
     }
 
     private IHttpClientFactory CreateFakeHttpClientFactory(string content)

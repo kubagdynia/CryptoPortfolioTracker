@@ -7,6 +7,8 @@ public class App(ICoinGeckoClient coinGeckoClient)
 {
     public async Task Run()
     {
+        var supportedCurrencies = await coinGeckoClient.GetSupportedVsCurrencies();
+        
         var price = await coinGeckoClient.GetSimplePrice(["bitcoin", "ethereum"], ["usd", "pln"]);
 
         foreach (var item in price)

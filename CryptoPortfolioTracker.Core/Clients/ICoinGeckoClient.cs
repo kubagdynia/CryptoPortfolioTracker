@@ -1,3 +1,5 @@
+using CryptoPortfolioTracker.Core.Clients.Models;
+
 namespace CryptoPortfolioTracker.Core.Clients;
 
 public interface ICoinGeckoClient
@@ -22,4 +24,9 @@ public interface ICoinGeckoClient
         bool includeMarketCap = false, bool include24HrVol = false, bool include24HrChange = false,
         bool includeLastUpdatedAt = false,
         CancellationToken ct = default);
+
+    /// <summary>
+    /// Get list of supported_vs_currencies.
+    /// </summary>
+    Task<SupportedCurrencies> GetSupportedVsCurrencies(CancellationToken ct = default);
 }

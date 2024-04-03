@@ -1,3 +1,4 @@
+using CryptoPortfolioTracker.Core.Clients.Models;
 using Microsoft.Extensions.Logging;
 
 namespace CryptoPortfolioTracker.Core.Clients;
@@ -63,5 +64,14 @@ public class CoinGeckoClient(IHttpClientFactory clientFactory, ILogger<CoinGecko
         }
 
         return resultList;
+    }
+
+    public async Task<SupportedCurrencies> GetSupportedVsCurrencies(CancellationToken ct = default)
+    {
+        var requestUri = CreateUrl("simple/supported_vs_currencies");
+        
+        var supportedCurrencies = await GetAsync<SupportedCurrencies>(requestUri, ct);
+        
+        return supportedCurrencies ?? [];
     }
 }

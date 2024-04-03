@@ -1,15 +1,4 @@
-using System.Collections.ObjectModel;
-
-namespace CryptoPortfolioTracker.Core.Clients;
-
-public class Price
-{
-    public required string Id { get; set; }
-
-    public IList<Currency> Currencies { get; set; } = new Collection<Currency>();
-
-    public decimal? LastUpdatedAt { get; set; }
-}
+namespace CryptoPortfolioTracker.Core.Clients.Models;
 
 public class Currency
 {
@@ -51,9 +40,4 @@ public class Currency
 
         return result;
     }
-}
-
-public class BaseDictionary : Dictionary<string, Dictionary<string, decimal?>>
-{
-    
 }
