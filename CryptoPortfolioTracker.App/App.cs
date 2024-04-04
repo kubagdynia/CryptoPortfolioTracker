@@ -7,6 +7,10 @@ public class App(ICoinGeckoClient coinGeckoClient)
 {
     public async Task Run()
     {
+        var price2 =
+            await coinGeckoClient.GetTokenPrice("ethereum", ["0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"], ["usd"],
+                true, true, true, true);
+        
         var supportedCurrencies = await coinGeckoClient.GetSupportedVsCurrencies();
         
         var price = await coinGeckoClient.GetSimplePrice(["bitcoin", "ethereum"], ["usd", "pln"]);

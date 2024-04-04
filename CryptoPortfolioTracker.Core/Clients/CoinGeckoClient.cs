@@ -18,7 +18,7 @@ public class CoinGeckoClient(IHttpClientFactory clientFactory, ILogger<CoinGecko
         return await GetAsync<Ping>(requestUri, ct);
     }
 
-    public async Task<Price> GetSimplePrice(string id, string currency = "usd",
+    public async Task<PriceId> GetSimplePrice(string id, string currency = "usd",
         bool includeMarketCap = false, bool include24HrVol = false, bool include24HrChange = false,
         bool includeLastUpdatedAt = false,
         CancellationToken ct = default)
@@ -27,7 +27,7 @@ public class CoinGeckoClient(IHttpClientFactory clientFactory, ILogger<CoinGecko
             include24HrChange, includeLastUpdatedAt, ct)).First();
     }
 
-    public async Task<IList<Price>> GetSimplePrice(string[] ids, string[] currencies,
+    public async Task<IList<PriceId>> GetSimplePrice(string[] ids, string[] currencies,
         bool includeMarketCap = false, bool include24HrVol = false, bool include24HrChange = false,
         bool includeLastUpdatedAt = false,
         CancellationToken ct = default)
@@ -46,14 +46,14 @@ public class CoinGeckoClient(IHttpClientFactory clientFactory, ILogger<CoinGecko
 
         if (data is null)
         {
-            return new List<Price>();
+            return new List<PriceId>();
         }
 
-        var resultList = new List<Price>();
+        var resultList = new List<PriceId>();
 
         foreach (var (id, dictionary) in data)
         {
-            var price = new Price
+            var price = new PriceId
             {
                 Id = id,
                 Currencies = Currency.GetCurrencies(dictionary),
@@ -65,7 +65,55 @@ public class CoinGeckoClient(IHttpClientFactory clientFactory, ILogger<CoinGecko
 
         return resultList;
     }
+    
+    public async Task<PriceContract> GetTokenPrice(string id, string contractAddress, string currency = "usd",
+        bool includeMarketCap = false, bool include24HrVol = false, bool include24HrChange = false,
+        bool includeLastUpdatedAt = false,
+        CancellationToken ct = default)
+    {
+        return (await GetTokenPrice(id, [contractAddress], [currency],
+            includeMarketCap, include24HrVol, include24HrChange, includeLastUpdatedAt, ct)).First();
+    }
 
+    public async Task<IList<PriceContract>> GetTokenPrice(string id, string[] contractAddresses, string[] currencies,
+        bool includeMarketCap = false, bool include24HrVol = false, bool include24HrChange = false,
+        bool includeLastUpdatedAt = false,
+        CancellationToken ct = default)
+    {
+        var requestUri = CreateUrl($"simple/token_price/{id}", new Dictionary<string, object>
+        {
+            { "contract_addresses", string.Join(",", contractAddresses) },
+            { "vs_currencies", string.Join(",", currencies) },
+            { "include_market_cap", includeMarketCap },
+            { "include_24hr_vol", include24HrVol },
+            { "include_24hr_change", include24HrChange },
+            { "include_last_updated_at", includeLastUpdatedAt }
+        });
+        
+        var data = await GetAsync<BaseDictionary>(requestUri, ct);
+
+        if (data is null)
+        {
+            return new List<PriceContract>();
+        }
+        
+        var resultList = new List<PriceContract>();
+
+        foreach (var (contract, dictionary) in data)
+        {
+            var price = new PriceContract
+            {
+                Contract = contract,
+                Currencies = Currency.GetCurrencies(dictionary),
+                LastUpdatedAt = dictionary.GetValueOrDefault("last_updated_at", null)
+            };
+
+            resultList.Add(price);
+        }
+
+        return resultList;
+    }
+    
     public async Task<SupportedCurrencies> GetSupportedVsCurrencies(CancellationToken ct = default)
     {
         var requestUri = CreateUrl("simple/supported_vs_currencies");

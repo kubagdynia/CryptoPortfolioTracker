@@ -133,6 +133,88 @@ public class SimpleTests
     }
     
     [Test]
+    public async Task GetTokenPrice_For_Chainlink_And_Sandbox_On_Ethereum_Should_Return_Correct_Data()
+    {
+        var responseContent =
+            """
+            {
+              "0x514910771af9ca656af840dff83e8264ecf986ca": {
+                "usd": 18.11,
+                "usd_market_cap": 10627600962.362597,
+                "usd_24h_vol": 430327252.6320851,
+                "usd_24h_change": 0.1592388247647689,
+                "pln": 71.41,
+                "pln_market_cap": 41907446908.85074,
+                "pln_24h_vol": 1697081586.2051523,
+                "pln_24h_change": -0.42896675918222205,
+                "last_updated_at": 1712242655
+              },
+              "0x3845badade8e6dff049820680d1f14bd3903a5d0": {
+                "usd": 0.609946,
+                "usd_market_cap": 1375997640.9250896,
+                "usd_24h_vol": 101368425.71492146,
+                "usd_24h_change": 0.2223305277088651,
+                "pln": 2.41,
+                "pln_market_cap": 5426521896.516285,
+                "pln_24h_vol": 399702392.9100327,
+                "pln_24h_change": -0.43717691552026017,
+                "last_updated_at": 1712243164
+              }
+            }
+            """;
+
+        var httpClientFactory = CreateFakeHttpClientFactory(responseContent);
+        var serviceProvider = TestHelper.CreateServiceProvider(httpClientFactory);
+
+        var client = serviceProvider.GetRequiredService<ICoinGeckoClient>();
+        var result = await client.GetTokenPrice("ethereum",
+            ["0x514910771af9ca656af840dff83e8264ecf986ca", "0x3845badade8e6dff049820680d1f14bd3903a5d0"],
+            ["usd", "pln"],
+            true, true, true, true);
+
+        result.Should().HaveCount(2);
+         
+        // Chainlink 
+        result[0].Contract.Should().BeEquivalentTo("0x514910771af9ca656af840dff83e8264ecf986ca");
+        result[0].LastUpdatedAt.Should().BeApproximately(1712242655m, 0);
+        result[0].Currencies.Should().HaveCount(2);
+        var currencyBtcUsd = result[0].Currencies.Currency("usd");
+        currencyBtcUsd.Should().NotBeNull();
+        currencyBtcUsd?.Name.Should().BeEquivalentTo("usd");
+        currencyBtcUsd?.Price.Should().BeApproximately(18.11m, 0);
+        currencyBtcUsd?.MarketCap.Should().BeApproximately(10627600962.362597m, 0);
+        currencyBtcUsd?.Vol24H.Should().BeApproximately(430327252.6320851m, 0);
+        currencyBtcUsd?.Change24H.Should().BeApproximately(0.1592388247647689m, 0);
+        var currencyBtcPln = result[0].Currencies.Currency("pln");
+        currencyBtcPln.Should().NotBeNull();
+        currencyBtcPln?.Name.Should().BeEquivalentTo("pln");
+        currencyBtcPln?.Price.Should().BeApproximately(71.41m, 0);
+        currencyBtcPln?.MarketCap.Should().BeApproximately(41907446908.85074m, 0);
+        currencyBtcPln?.Vol24H.Should().BeApproximately(1697081586.2051523m, 0);
+        currencyBtcPln?.Change24H.Should().BeApproximately(-0.42896675918222205m, 0);
+        
+        
+        // ethereum
+        result[1].Contract.Should().BeEquivalentTo("0x3845badade8e6dff049820680d1f14bd3903a5d0");
+        result[1].LastUpdatedAt.Should().BeApproximately(1712243164m, 0);
+        result[1].Currencies.Should().HaveCount(2);
+        var currencyEthUsd = result[1].Currencies.Currency("usd");
+        currencyEthUsd.Should().NotBeNull();
+        currencyEthUsd?.Name.Should().BeEquivalentTo("usd");
+        currencyEthUsd?.Price.Should().BeApproximately(0.609946m, 0);
+        currencyEthUsd?.MarketCap.Should().BeApproximately(1375997640.9250896m, 0);
+        currencyEthUsd?.Vol24H.Should().BeApproximately(101368425.71492146m, 0);
+        currencyEthUsd?.Change24H.Should().BeApproximately(0.2223305277088651m, 0);
+        var currencyEthPln = result[1].Currencies.Currency("pln");
+        currencyEthPln.Should().NotBeNull();
+        currencyEthPln?.Name.Should().BeEquivalentTo("pln");
+        currencyEthPln?.Price.Should().BeApproximately(2.41m, 0);
+        currencyEthPln?.MarketCap.Should().BeApproximately(5426521896.516285m, 0);
+        currencyEthPln?.Vol24H.Should().BeApproximately(399702392.9100327m, 0);
+        currencyEthPln?.Change24H.Should().BeApproximately(-0.43717691552026017m, 0);
+    }
+    
+    [Test]
     public async Task GetSupportedVsCurrencies_Should_Return_Correct_Data()
     {
         var responseContent =
