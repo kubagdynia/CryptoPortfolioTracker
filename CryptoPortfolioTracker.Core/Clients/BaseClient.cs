@@ -2,6 +2,7 @@ using System.Globalization;
 using System.Net;
 using System.Net.Http.Json;
 using System.Text.Json;
+using CryptoPortfolioTracker.Core.Exceptions;
 using Microsoft.Extensions.Logging;
 using Polly.Timeout;
 
@@ -69,10 +70,18 @@ public abstract class BaseClient(IHttpClientFactory clientFactory, ILogger<BaseC
                     throw;
                 }
             }
+            
+            var message = await response.Content.ReadAsStringAsync(cancellationToken: ct);
+            throw new ExternalApiException(message, response.StatusCode);
         }
         catch (TimeoutRejectedException ex)
         {
             logger.LogError(ex, $"Timeout has occurred.");
+            throw;
+        }
+        catch (ExternalApiException ex)
+        {
+            logger.LogError(ex, $"There was an error in the response from the external API: {ex.Status}");
             throw;
         }
         catch (Exception ex)
@@ -80,7 +89,5 @@ public abstract class BaseClient(IHttpClientFactory clientFactory, ILogger<BaseC
             logger.LogError(ex, $"An error occurred.");
             throw;
         }
-
-        return await Task.FromResult<T>(default!);
     }
 }
