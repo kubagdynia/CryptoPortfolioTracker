@@ -1,9 +1,11 @@
 using CryptoPortfolioTracker.Core.Clients;
 using CryptoPortfolioTracker.Core.Configuration;
+using CryptoPortfolioTracker.Core.Extensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
+using Serilog;
 
 namespace CryptoPortfolioTracker.Tests;
 
@@ -33,4 +35,31 @@ public static class TestHelper
         
         return services.BuildServiceProvider();
     }
+
+    public static ServiceProvider CreateNoMoqServiceProvider(string config)
+    {
+        var services = new ServiceCollection();
+        
+        using var mem = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(config));
+        
+        // Create an empty configuration 
+        var configuration = new ConfigurationBuilder().AddJsonStream(mem).Build();
+        
+        // defining Serilog configs
+        Log.Logger = new LoggerConfiguration()
+            .ReadFrom.Configuration(configuration)
+            .Enrich.FromLogContext()
+            .CreateLogger();
+        
+        // configure logging
+        services.AddLogging(builder =>
+        { 
+            builder.AddSerilog();
+        });
+        
+        services.RegisterCore(configuration);
+        
+        return services.BuildServiceProvider();
+    }
+
 }

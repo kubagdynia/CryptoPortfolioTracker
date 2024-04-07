@@ -8,6 +8,8 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace CryptoPortfolioTracker.Tests;
 
+[TestFixture]
+[Category("UnitTests")]
 public class SimpleTests
 {
     [SetUp]
@@ -292,6 +294,12 @@ public class SimpleTests
         var supportedCurrencies = await client.GetSupportedVsCurrencies();
 
         supportedCurrencies.Should().NotBeNull();
+        
+        supportedCurrencies.Should().Contain("usd");
+        supportedCurrencies.Should().Contain("btc");
+        supportedCurrencies.Should().Contain("eth");
+        supportedCurrencies.Should().Contain("eur");
+        
         supportedCurrencies.Should().HaveCount(62);
     }
 
