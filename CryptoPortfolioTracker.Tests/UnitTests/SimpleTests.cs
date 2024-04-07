@@ -6,7 +6,7 @@ using Moq;
 using Moq.Protected;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace CryptoPortfolioTracker.Tests;
+namespace CryptoPortfolioTracker.Tests.UnitTests;
 
 [TestFixture]
 [Category("UnitTests")]
