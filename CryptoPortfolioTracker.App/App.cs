@@ -1,29 +1,46 @@
 using CryptoPortfolioTracker.Core.Clients;
-using CryptoPortfolioTracker.Core.Extensions;
+using CryptoPortfolioTracker.Core.Clients.Models;
+using CryptoPortfolioTracker.Core.Configuration;
+using Microsoft.Extensions.Options;
 
 namespace CryptoPortfolioTracker.App;
 
-public class App(ICoinGeckoClient coinGeckoClient)
+public class App(ICoinGeckoClient coinGeckoClient, IOptions<AppSettings> settings)
 {
+    private readonly AppSettings _appSettings = settings.Value;
+    
     public async Task Run()
     {
-        var price2 =
-            await coinGeckoClient.GetTokenPrice("ethereum", ["0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"], ["usd"],
-                true, true, true, true);
-        
-        var supportedCurrencies = await coinGeckoClient.GetSupportedVsCurrencies();
-        
-        var price = await coinGeckoClient.GetSimplePrice(["bitcoin", "ethereum"], ["usd", "pln"]);
-
-        foreach (var item in price)
+        if (_appSettings.CryptoPortfolio is not null)
         {
-            Console.WriteLine(item.Id);
-            Console.WriteLine(item.LastUpdatedAt);
-            var currency = item.Currencies.Currency("usd");
-            Console.WriteLine(currency?.Name);
-            Console.WriteLine(currency?.Price);
+            var cryptoIds = _appSettings.CryptoPortfolio.Select(c => c.CoinId).ToArray();
+            
+            var prices = await coinGeckoClient.GetSimplePrice(cryptoIds, _appSettings.Currencies);
+
+            var portfolio =
+                _appSettings.Currencies.Select(c => new KeyValuePair<string, decimal?>(c, 0)).ToDictionary();
+            
+            foreach (var crypto in _appSettings.CryptoPortfolio)
+            {
+                var price = GetPriceByCoinId(crypto.CoinId, prices);
+                if (price is not null)
+                {
+                    foreach (var currency in price.Currencies)
+                    {
+                        portfolio[currency.Name] += currency.Price;
+                    }
+                }
+            }
+
+            foreach (var curr in portfolio)
+            {
+                Console.WriteLine($"{curr.Key}: {curr.Value}");
+            }
         }
         
         await Task.CompletedTask;
     }
+
+    private PriceId? GetPriceByCoinId(string coinId, IList<PriceId> prices)
+        => prices.SingleOrDefault(p => p.Id.Equals(coinId, StringComparison.OrdinalIgnoreCase));
 }
