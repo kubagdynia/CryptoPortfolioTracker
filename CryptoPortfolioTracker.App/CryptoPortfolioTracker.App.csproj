@@ -26,6 +26,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="cryptoportfolio.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\CryptoPortfolioTracker.Core\CryptoPortfolioTracker.Core.csproj" />
   </ItemGroup>
 

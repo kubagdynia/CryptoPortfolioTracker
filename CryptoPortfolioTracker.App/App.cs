@@ -11,31 +11,32 @@ public class App(ICoinGeckoClient coinGeckoClient, IOptions<AppSettings> setting
     
     public async Task Run()
     {
-        if (_appSettings.CryptoPortfolio is not null)
+        if (_appSettings.Portfolio.CryptoPortfolio is not null && _appSettings.Portfolio.Currencies is not null)
         {
-            var cryptoIds = _appSettings.CryptoPortfolio.Select(c => c.CoinId).ToArray();
+            var cryptoIds = _appSettings.Portfolio.CryptoPortfolio.Select(c => c.CoinId).ToArray();
             
-            var prices = await coinGeckoClient.GetSimplePrice(cryptoIds, _appSettings.Currencies);
+            var prices = await coinGeckoClient.GetSimplePrice(cryptoIds, _appSettings.Portfolio.Currencies);
 
             var portfolio =
-                _appSettings.Currencies.Select(c => new KeyValuePair<string, decimal?>(c, 0)).ToDictionary();
+                _appSettings.Portfolio.Currencies.Select(c => new KeyValuePair<string, decimal?>(c, 0)).ToDictionary();
             
-            foreach (var crypto in _appSettings.CryptoPortfolio)
+            foreach (var crypto in _appSettings.Portfolio.CryptoPortfolio)
             {
                 var price = GetPriceByCoinId(crypto.CoinId, prices);
                 if (price is not null)
                 {
                     foreach (var currency in price.Currencies)
                     {
-                        portfolio[currency.Name] += currency.Price;
+                        portfolio[currency.Name] += crypto.Quantity * currency.Price;
                     }
                 }
             }
-
+            
             foreach (var curr in portfolio)
             {
                 Console.WriteLine($"{curr.Key}: {curr.Value}");
             }
+            
         }
         
         await Task.CompletedTask;

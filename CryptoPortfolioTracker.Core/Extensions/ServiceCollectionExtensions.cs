@@ -10,9 +10,8 @@ namespace CryptoPortfolioTracker.Core.Extensions;
 
 public static class ServiceCollectionExtensions
 {
-    private const string AppConfigSectionName = "App";
-
-    public static void RegisterCore(this IServiceCollection services, IConfiguration configuration, string appConfigSectionName = AppConfigSectionName)
+    public static void RegisterCore(this IServiceCollection services, IConfiguration configuration,
+        string appConfigSectionName = AppSettings.AppConfigSectionName)
     {
         var appConfig = configuration.GetSection(appConfigSectionName);
 

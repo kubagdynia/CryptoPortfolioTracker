@@ -399,3 +399,6 @@ FodyWeavers.xsd
 *.sln.iml
 
 .mono/
+
+# To increase privacy, we do not add this file to the repository. This file should only exist locally. 
+cryptoportfolio.json
