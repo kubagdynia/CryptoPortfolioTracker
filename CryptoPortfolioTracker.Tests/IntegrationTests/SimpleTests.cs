@@ -16,31 +16,31 @@ public class SimpleTests
     public void Init()
     {
         var config = """
-             {
-                 "Serilog" : {
-                   "MinimalLevel": {
-                     "Default": "Debug",
-                     "Override": {
-                       "Microsoft": "Information",
-                       "System": "Information"
-                     }
-                   },
-                   "Using": [ "Serilog.Sinks.File" ],
-                   "WriteTo": [
-                     {
-                       "Name": "File",
-                       "Args": {
-                         "path": "app.txt",
-                         "rollingInterval": "Day",
-                         "retainedFileCountLimit": 10,
-                         "fileSizeLimitBytes": 52428800,
-                         "outputTemplate": "{Timestamp:yyyy-MM-dd HH:mm:ss.fff} [{Level:u3}] {Message:lj}{NewLine}{Exception}"
-                       }
-                     }
-                   ]
+         {
+             "Serilog" : {
+               "MinimalLevel": {
+                 "Default": "Debug",
+                 "Override": {
+                   "Microsoft": "Information",
+                   "System": "Information"
                  }
+               },
+               "Using": [ "Serilog.Sinks.File" ],
+               "WriteTo": [
+                 {
+                   "Name": "File",
+                   "Args": {
+                     "path": "app.txt",
+                     "rollingInterval": "Day",
+                     "retainedFileCountLimit": 10,
+                     "fileSizeLimitBytes": 52428800,
+                     "outputTemplate": "{Timestamp:yyyy-MM-dd HH:mm:ss.fff} [{Level:u3}] {Message:lj}{NewLine}{Exception}"
+                   }
+                 }
+               ]
              }
-             """;
+         }
+         """;
         
         // Create a real service provider, not a mocked one.
         _serviceProvider = TestHelper.CreateNoMoqServiceProvider(config);

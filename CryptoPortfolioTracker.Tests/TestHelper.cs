@@ -1,29 +1,42 @@
+using System.Net;
 using CryptoPortfolioTracker.Core.Clients;
 using CryptoPortfolioTracker.Core.Configuration;
 using CryptoPortfolioTracker.Core.Extensions;
+using CryptoPortfolioTracker.Core.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
+using Moq.Protected;
 using Serilog;
 
 namespace CryptoPortfolioTracker.Tests;
 
 public static class TestHelper
 {
-    public static ServiceProvider CreateServiceProvider(IHttpClientFactory httpClientFactory)
+    public static ServiceProvider CreateServiceProvider(IHttpClientFactory httpClientFactory, string? config = null)
     {
         var services = new ServiceCollection();
+
+        IConfigurationRoot? configuration;
+        if (config is null)
+        {
+            // Create an empty configuration 
+            configuration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>()).Build();
+        }
+        else
+        {
+            using var mem = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(config));
+            configuration = new ConfigurationBuilder().AddJsonStream(mem).Build();
+        }
         
         // Create an empty configuration 
-        var configuration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>()).Build();
-        var appConfigSectionName = "App";
-        var appConfig = configuration.GetSection(appConfigSectionName);
+        var appConfig = configuration.GetSection(AppSettings.AppConfigSectionName);
 
         if (!appConfig.Exists())
         {
             // Create a default configuration
-            appConfig = DefaultAppConfig.GetDefaultAppConfig(appConfigSectionName);
+            appConfig = DefaultAppConfig.GetDefaultAppConfig(AppSettings.AppConfigSectionName);
         }
         
         services.Configure<AppSettings>(appConfig);
@@ -32,6 +45,7 @@ public static class TestHelper
 
         services.AddTransient<ICoinGeckoClient, CoinGeckoClient>(x =>
             new CoinGeckoClient(httpClientFactory, loggerMock.Object));
+        services.AddTransient<IPortfolioService, PortfolioService>();
         
         return services.BuildServiceProvider();
     }
@@ -42,7 +56,6 @@ public static class TestHelper
         
         using var mem = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(config));
         
-        // Create an empty configuration 
         var configuration = new ConfigurationBuilder().AddJsonStream(mem).Build();
         
         // defining Serilog configs
@@ -61,5 +74,29 @@ public static class TestHelper
         
         return services.BuildServiceProvider();
     }
-
+    
+    public static IHttpClientFactory CreateFakeHttpClientFactory(string content)
+    {
+        var mockHttpClientFactory = new Mock<IHttpClientFactory>();
+        
+        var mockHttpResponse = new HttpResponseMessage()
+        {
+            StatusCode = HttpStatusCode.OK,
+            Content = new StringContent(content)
+        };
+        
+        var mockHttpMessageHandler = new Mock<HttpMessageHandler>();
+        mockHttpMessageHandler.Protected()
+            .Setup<Task<HttpResponseMessage>>(
+                "SendAsync",
+                ItExpr.Is<HttpRequestMessage>(req => req.Method == HttpMethod.Get),
+                ItExpr.IsAny<CancellationToken>()
+            )
+            .ReturnsAsync(mockHttpResponse);
+        
+        var mockHttpClient = new HttpClient(mockHttpMessageHandler.Object);
+        mockHttpClientFactory.Setup(x => x.CreateClient("ClientWithoutSSLValidation")).Returns(mockHttpClient);
+        
+        return mockHttpClientFactory.Object;
+    }
 }

@@ -1,5 +1,6 @@
 using CryptoPortfolioTracker.Core.Clients;
 using CryptoPortfolioTracker.Core.Configuration;
+using CryptoPortfolioTracker.Core.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Polly;
@@ -24,6 +25,7 @@ public static class ServiceCollectionExtensions
         services.Configure<AppSettings>(appConfig);
 
         services.AddTransient<ICoinGeckoClient, CoinGeckoClient>();
+        services.AddTransient<IPortfolioService, PortfolioService>();
         
         AddHttpClient(services);
     }

@@ -48,7 +48,7 @@ public class SimpleTests
             }
             """;
 
-        var httpClientFactory = CreateFakeHttpClientFactory(responseContent);
+        var httpClientFactory = TestHelper.CreateFakeHttpClientFactory(responseContent);
         var serviceProvider = TestHelper.CreateServiceProvider(httpClientFactory);
 
         var client = serviceProvider.GetRequiredService<ICoinGeckoClient>();
@@ -117,7 +117,7 @@ public class SimpleTests
             }
             """;
 
-        var httpClientFactory = CreateFakeHttpClientFactory(responseContent);
+        var httpClientFactory = TestHelper.CreateFakeHttpClientFactory(responseContent);
         var serviceProvider = TestHelper.CreateServiceProvider(httpClientFactory);
 
         var client = serviceProvider.GetRequiredService<ICoinGeckoClient>();
@@ -165,7 +165,7 @@ public class SimpleTests
             }
             """;
 
-        var httpClientFactory = CreateFakeHttpClientFactory(responseContent);
+        var httpClientFactory = TestHelper.CreateFakeHttpClientFactory(responseContent);
         var serviceProvider = TestHelper.CreateServiceProvider(httpClientFactory);
 
         var client = serviceProvider.GetRequiredService<ICoinGeckoClient>();
@@ -287,7 +287,7 @@ public class SimpleTests
             ]
             """;
 
-        var httpClientFactory = CreateFakeHttpClientFactory(responseContent);
+        var httpClientFactory = TestHelper.CreateFakeHttpClientFactory(responseContent);
         var serviceProvider = TestHelper.CreateServiceProvider(httpClientFactory);
 
         var client = serviceProvider.GetRequiredService<ICoinGeckoClient>();
@@ -301,30 +301,5 @@ public class SimpleTests
         supportedCurrencies.Should().Contain("eur");
         
         supportedCurrencies.Should().HaveCount(62);
-    }
-
-    private IHttpClientFactory CreateFakeHttpClientFactory(string content)
-    {
-        var mockHttpClientFactory = new Mock<IHttpClientFactory>();
-        
-        var mockHttpResponse = new HttpResponseMessage()
-        {
-            StatusCode = HttpStatusCode.OK,
-            Content = new StringContent(content)
-        };
-        
-        var mockHttpMessageHandler = new Mock<HttpMessageHandler>();
-        mockHttpMessageHandler.Protected()
-            .Setup<Task<HttpResponseMessage>>(
-                "SendAsync",
-                ItExpr.Is<HttpRequestMessage>(req => req.Method == HttpMethod.Get),
-                ItExpr.IsAny<CancellationToken>()
-            )
-            .ReturnsAsync(mockHttpResponse);
-        
-        var mockHttpClient = new HttpClient(mockHttpMessageHandler.Object);
-        mockHttpClientFactory.Setup(x => x.CreateClient("ClientWithoutSSLValidation")).Returns(mockHttpClient);
-        
-        return mockHttpClientFactory.Object;
     }
 }
