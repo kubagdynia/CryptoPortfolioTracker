@@ -20,7 +20,7 @@ void ConfigureServices()
     // build config
     IConfiguration configuration = new ConfigurationBuilder()
         .SetBasePath(Directory.GetCurrentDirectory())
-        .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+        .AddJsonFile("baseappsettings.json", optional: false, reloadOnChange: true)
         .AddJsonFile("cryptoportfolio.json", optional: true, reloadOnChange: true)
         .AddEnvironmentVariables()
         .Build();
