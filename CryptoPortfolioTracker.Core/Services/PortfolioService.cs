@@ -1,6 +1,7 @@
 using CryptoPortfolioTracker.Core.Clients;
 using CryptoPortfolioTracker.Core.Clients.Models;
 using CryptoPortfolioTracker.Core.Configuration;
+using CryptoPortfolioTracker.Core.Services.Models;
 using Microsoft.Extensions.Options;
 
 namespace CryptoPortfolioTracker.Core.Services;
@@ -38,7 +39,7 @@ public class PortfolioService(ICoinGeckoClient coinGeckoClient, IOptions<AppSett
         return await Task.FromResult(new Dictionary<string, decimal?>());
     }
 
-    public async Task<Dictionary<string, Dictionary<string, decimal?>>> GetPortfolioByCoinId()
+    public async Task<PortfolioDto> GetPortfolioByCoinId()
     {
         if (_appSettings.Portfolio.CryptoPortfolio is not null && _appSettings.Portfolio.Currencies is not null)
         {
@@ -46,11 +47,14 @@ public class PortfolioService(ICoinGeckoClient coinGeckoClient, IOptions<AppSett
             
             var prices = await coinGeckoClient.GetSimplePrice(cryptoIds, _appSettings.Portfolio.Currencies);
 
-            Dictionary<string, Dictionary<string, decimal?>> portfolioByCoin = cryptoIds.Select(id =>
-                    new KeyValuePair<string, Dictionary<string, decimal?>>(id,
-                        _appSettings.Portfolio.Currencies.Select(c => new KeyValuePair<string, decimal?>(c, 0))
-                            .ToDictionary()))
-                .ToDictionary();
+            var portfolioDto = new PortfolioDto
+            {
+                FullPortfolio = cryptoIds.Select(id =>
+                        new KeyValuePair<string, Dictionary<string, decimal?>>(id,
+                            _appSettings.Portfolio.Currencies.Select(c => new KeyValuePair<string, decimal?>(c, 0))
+                                .ToDictionary()))
+                    .ToDictionary()
+            };
             
             foreach (var crypto in _appSettings.Portfolio.CryptoPortfolio)
             {
@@ -59,15 +63,15 @@ public class PortfolioService(ICoinGeckoClient coinGeckoClient, IOptions<AppSett
                 {
                     foreach (var currency in price.Currencies)
                     {
-                        portfolioByCoin[crypto.CoinId][currency.Name] += crypto.Quantity * currency.Price;
+                        portfolioDto.FullPortfolio[crypto.CoinId][currency.Name] += crypto.Quantity * currency.Price;
                     }
                 }
             }
 
-            return portfolioByCoin;
+            return portfolioDto;
         }
 
-        return await Task.FromResult(new Dictionary<string, Dictionary<string, decimal?>>());
+        return await Task.FromResult(new PortfolioDto());
     }
     
     private PriceId? GetPriceByCoinId(string coinId, IList<PriceId> prices)
