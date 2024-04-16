@@ -9,8 +9,8 @@ public class CoinGeckoClient(IHttpClientFactory clientFactory, ILogger<CoinGecko
     private static readonly Uri ApiEndpoint = new("https://api.coingecko.com/api/v3/");
     private static readonly Uri ProApiEndpoint = new("https://pro-api.coingecko.com/api/v3/");
 
-    protected override Uri GetApiEndpoint => ApiEndpoint;
-    protected override Uri GetProApiEndpoint => ProApiEndpoint;
+    protected override Uri GetApiEndpoint() => ApiEndpoint;
+    protected override Uri GetProApiEndpoint() => ProApiEndpoint;
 
     public async Task<Ping?> GetPingAsync(CancellationToken ct = default)
     {

@@ -10,9 +10,9 @@ namespace CryptoPortfolioTracker.Core.Clients;
 
 public abstract class BaseClient(IHttpClientFactory clientFactory, ILogger<BaseClient> logger)
 {
-    protected abstract Uri GetApiEndpoint { get; }
-    
-    protected abstract Uri GetProApiEndpoint { get; }
+    protected abstract Uri GetApiEndpoint();
+
+    protected abstract Uri GetProApiEndpoint();
 
     protected Uri CreateUrl(string path)
         => CreateUrl(path, new Dictionary<string, object>());
@@ -40,7 +40,7 @@ public abstract class BaseClient(IHttpClientFactory clientFactory, ILogger<BaseC
         
         var url = encodedParams.Length > 0 ? $"{path}{string.Join(string.Empty, encodedParams)}" : path;
         
-        return new Uri(GetApiEndpoint, url);
+        return new Uri(GetApiEndpoint(), url);
     }
     
     protected async Task<T?> GetAsync<T>(Uri requestUri, CancellationToken ct = default)
