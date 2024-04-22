@@ -6,6 +6,7 @@ using CryptoPortfolioTracker.Core.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Moq;
 using Moq.Protected;
 using Serilog;
@@ -42,9 +43,10 @@ public static class TestHelper
         services.Configure<AppSettings>(appConfig);
         
         var loggerMock = new Mock<ILogger<CoinGeckoClient>>();
-
+        
         services.AddTransient<ICoinGeckoClient, CoinGeckoClient>(x =>
-            new CoinGeckoClient(httpClientFactory, loggerMock.Object));
+            new CoinGeckoClient(httpClientFactory, loggerMock.Object, Options.Create(appConfig.Get<AppSettings>()!)));
+        
         services.AddTransient<IPortfolioService, PortfolioService>();
         
         return services.BuildServiceProvider();

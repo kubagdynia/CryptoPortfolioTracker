@@ -32,7 +32,15 @@ public class PortfolioTests
                      "quantity": 2
                    }
                  ]
-               }
+               },
+               "ApiKeys": [
+                 {
+                   "Name": "CoinGecko-ProApi",
+                   "Url": "https://pro-api.coingecko.com/api/v3/",
+                   "ApiKey": "",
+                   "Enabled": false
+                 }
+               ]
              },
              "Serilog" : {
                "MinimalLevel": {

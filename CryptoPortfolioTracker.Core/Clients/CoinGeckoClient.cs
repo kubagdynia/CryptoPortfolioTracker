@@ -1,16 +1,27 @@
 using CryptoPortfolioTracker.Core.Clients.Models;
+using CryptoPortfolioTracker.Core.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace CryptoPortfolioTracker.Core.Clients;
 
-public class CoinGeckoClient(IHttpClientFactory clientFactory, ILogger<CoinGeckoClient> logger)
+public class CoinGeckoClient(IHttpClientFactory clientFactory, ILogger<CoinGeckoClient> logger, IOptions<AppSettings> settings)
     : BaseClient(clientFactory, logger), ICoinGeckoClient
 {
+    private readonly AppSettings _appSettings = settings.Value;
+    
     private static readonly Uri ApiEndpoint = new("https://api.coingecko.com/api/v3/");
     private static readonly Uri ProApiEndpoint = new("https://pro-api.coingecko.com/api/v3/");
 
-    protected override Uri GetApiEndpoint() => ApiEndpoint;
-    protected override Uri GetProApiEndpoint() => ProApiEndpoint;
+    protected override Uri GetApiEndpoint()
+    {
+        if (_appSettings.IsProApiKeyExistsAndEnabled(out var api))
+        {
+            return new Uri(api.Url);
+        }
+        
+        return new Uri("https://api.coingecko.com/api/v3/");
+    }
 
     public async Task<Ping?> GetPingAsync(CancellationToken ct = default)
     {

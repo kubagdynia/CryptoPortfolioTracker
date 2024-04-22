@@ -12,8 +12,6 @@ public abstract class BaseClient(IHttpClientFactory clientFactory, ILogger<BaseC
 {
     protected abstract Uri GetApiEndpoint();
 
-    protected abstract Uri GetProApiEndpoint();
-
     protected Uri CreateUrl(string path)
         => CreateUrl(path, new Dictionary<string, object>());
     
