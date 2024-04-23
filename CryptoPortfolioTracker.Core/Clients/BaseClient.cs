@@ -3,6 +3,7 @@ using System.Net;
 using System.Net.Http.Json;
 using System.Text.Json;
 using CryptoPortfolioTracker.Core.Exceptions;
+using CryptoPortfolioTracker.Core.Extensions;
 using Microsoft.Extensions.Logging;
 using Polly.Timeout;
 
@@ -12,12 +13,16 @@ public abstract class BaseClient(IHttpClientFactory clientFactory, ILogger<BaseC
 {
     protected abstract Uri GetApiEndpoint();
 
+    protected abstract Dictionary<string, object> GetAdditionalParameters();
+
     protected Uri CreateUrl(string path)
         => CreateUrl(path, new Dictionary<string, object>());
     
     protected Uri CreateUrl(string path, Dictionary<string, object> parameters)
     {
         var urlParameters = new List<string?>();
+        
+        parameters.AddRange(GetAdditionalParameters());
         
         foreach (var parameter in parameters)
         {

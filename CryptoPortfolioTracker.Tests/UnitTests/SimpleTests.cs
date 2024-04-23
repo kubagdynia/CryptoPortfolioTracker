@@ -1,9 +1,6 @@
-using System.Net;
 using CryptoPortfolioTracker.Core.Clients;
 using CryptoPortfolioTracker.Core.Extensions;
 using FluentAssertions;
-using Moq;
-using Moq.Protected;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace CryptoPortfolioTracker.Tests.UnitTests;

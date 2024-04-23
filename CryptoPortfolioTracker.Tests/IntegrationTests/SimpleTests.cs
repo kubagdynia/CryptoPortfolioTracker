@@ -17,6 +17,32 @@ public class SimpleTests
     {
         var config = """
          {
+             "App": {
+               "Portfolio": {
+                 "Currencies": ["usd", "pln"],
+                 "CryptoPortfolio": [
+                   
+                 ]
+               },
+               "ApiKeys": [
+                 {
+                   "Selected": true,
+                   "Name": "CoinGecko-Free",
+                   "Url": "https://api.coingecko.com/api/v3/"
+                 },
+                 {
+                   "Selected": false,
+                   "Name": "CoinGecko-ProApi",
+                   "Url": "https://pro-api.coingecko.com/api/v3/",
+                   "Parameters": [
+                     {
+                       "Name": "x_cg_pro_api_key",
+                       "Value": ""
+                     }
+                   ]
+                 }
+               ]
+             },
              "Serilog" : {
                "MinimalLevel": {
                  "Default": "Debug",

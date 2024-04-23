@@ -9,23 +9,30 @@ public class CoinGeckoClient(IHttpClientFactory clientFactory, ILogger<CoinGecko
     : BaseClient(clientFactory, logger), ICoinGeckoClient
 {
     private readonly AppSettings _appSettings = settings.Value;
-    
-    private static readonly Uri ApiEndpoint = new("https://api.coingecko.com/api/v3/");
-    private static readonly Uri ProApiEndpoint = new("https://pro-api.coingecko.com/api/v3/");
 
     protected override Uri GetApiEndpoint()
     {
-        if (_appSettings.IsProApiKeyExistsAndEnabled(out var api))
+        var api = _appSettings.GetSelectedApi();
+        return new Uri(api.Url);
+    }
+
+    protected override Dictionary<string, object> GetAdditionalParameters()
+    {
+        var api = _appSettings.GetSelectedApi();
+
+        if (api.Parameters is null)
         {
-            return new Uri(api.Url);
+            return new Dictionary<string, object>();
         }
-        
-        return new Uri("https://api.coingecko.com/api/v3/");
+
+        var addParams = api.Parameters.ToDictionary(key => key.Name, value => value.Value);
+
+        return addParams;
     }
 
     public async Task<Ping?> GetPingAsync(CancellationToken ct = default)
     {
-        var requestUri = new Uri(ApiEndpoint, "ping");
+        var requestUri = new Uri(GetApiEndpoint(), "ping");
         return await GetAsync<Ping>(requestUri, ct);
     }
 

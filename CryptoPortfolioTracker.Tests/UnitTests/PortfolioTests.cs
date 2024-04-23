@@ -35,10 +35,24 @@ public class PortfolioTests
                },
                "ApiKeys": [
                  {
+                   "Selected": true,
+                   "Name": "CoinGecko-Free",
+                   "Url": "https://api.coingecko.com/api/v3/"
+                 },
+                 {
+                   "Selected": false,
                    "Name": "CoinGecko-ProApi",
                    "Url": "https://pro-api.coingecko.com/api/v3/",
-                   "ApiKey": "",
-                   "Enabled": false
+                   "Parameters": [
+                     {
+                       "Name": "x_cg_pro_api_key",
+                       "Value": "12121"
+                     },
+                     {
+                       "Name": "vvvvvvvvv",
+                       "Value": true
+                     }
+                   ]
                  }
                ]
              },
@@ -125,7 +139,29 @@ public class PortfolioTests
                      "quantity": 2.01895
                    }
                  ]
-               }
+               },
+               "ApiKeys": [
+                 {
+                   "Selected": true,
+                   "Name": "CoinGecko-Free",
+                   "Url": "https://api.coingecko.com/api/v3/"
+                 },
+                 {
+                   "Selected": false,
+                   "Name": "CoinGecko-ProApi",
+                   "Url": "https://pro-api.coingecko.com/api/v3/",
+                   "Parameters": [
+                     {
+                       "Name": "x_cg_pro_api_key",
+                       "Value": "12121"
+                     },
+                     {
+                       "Name": "vvvvvvvvv",
+                       "Value": true
+                     }
+                   ]
+                 }
+               ]
              },
              "Serilog" : {
                "MinimalLevel": {

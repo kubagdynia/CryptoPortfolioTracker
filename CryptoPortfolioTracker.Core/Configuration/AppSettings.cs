@@ -8,19 +8,14 @@ public class AppSettings
 
     public List<Api> ApiKeys { get; set; } = [];
 
-    public bool IsApiKeyExistsAndEnabled() 
-        => ApiKeys.Count != 0 && ApiKeys.Any(c => c.Enabled && !string.IsNullOrWhiteSpace(c.ApiKey));
-    
-    public bool IsProApiKeyExistsAndEnabled(out Api apiKey)
+    public Api GetSelectedApi()
     {
-        if (ApiKeys.Count != 0 && ApiKeys.Any(c => c.Enabled && !string.IsNullOrWhiteSpace(c.ApiKey)))
+        if (ApiKeys.Count != 0 && ApiKeys.Any(c => c.Selected))
         {
-            apiKey = ApiKeys.First(c => c.Enabled && !string.IsNullOrWhiteSpace(c.ApiKey));
-            return true;
+            return ApiKeys.First(c => c.Selected);
         }
-
-        apiKey = new Api();
-        return false;
+        
+        return new Api();
     }
 }
 
@@ -30,9 +25,16 @@ public class Api
 
     public string Url { get; set; }
     
-    public string ApiKey { get; set; }
+    public Parameter[]? Parameters { get; set; }
 
-    public bool Enabled { get; set; }
+    public bool Selected { get; set; }
+}
+
+public class Parameter
+{
+    public string Name { get; set; }
+    
+    public object Value { get; set; }
 }
 
 public class Portfolio
