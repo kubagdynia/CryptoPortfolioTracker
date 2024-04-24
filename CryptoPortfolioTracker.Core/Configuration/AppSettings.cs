@@ -1,3 +1,5 @@
+using CryptoPortfolioTracker.Core.Exceptions;
+
 namespace CryptoPortfolioTracker.Core.Configuration;
 
 public class AppSettings
@@ -15,7 +17,7 @@ public class AppSettings
             return ApiKeys.First(c => c.Selected);
         }
         
-        return new Api();
+        throw new ConfigurationException("Configuration error. At least one ApiKey should be marked as selected - ApiKeys -> Selected: true ");
     }
 }
 
@@ -28,6 +30,16 @@ public class Api
     public Parameter[]? Parameters { get; set; }
 
     public bool Selected { get; set; }
+    
+    public Dictionary<string, object> GetParametersAsDictionary()
+    {
+        if (Parameters is null)
+        {
+            return new Dictionary<string, object>();
+        }
+
+        return Parameters.ToDictionary(key => key.Name, value => value.Value);
+    }
 }
 
 public class Parameter

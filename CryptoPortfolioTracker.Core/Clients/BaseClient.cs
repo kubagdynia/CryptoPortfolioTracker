@@ -28,7 +28,8 @@ public abstract class BaseClient(IHttpClientFactory clientFactory, ILogger<BaseC
         {
             var param = string.IsNullOrWhiteSpace(parameter.Value.ToString())
                 ? null
-                : $"{parameter.Key}={parameter.Value.ToString()?.ToLower(CultureInfo.InvariantCulture)}";
+                //: $"{parameter.Key}={parameter.Value.ToString()?.ToLower(CultureInfo.InvariantCulture)}";
+                : $"{parameter.Key}={parameter.Value}";
             
             if (param is not null)
             {
@@ -49,6 +50,7 @@ public abstract class BaseClient(IHttpClientFactory clientFactory, ILogger<BaseC
     protected async Task<T?> GetAsync<T>(Uri requestUri, CancellationToken ct = default)
     {
         var client = clientFactory.CreateClient("ClientWithoutSSLValidation");
+        client.DefaultRequestHeaders.Add("accept", "application/json");
 
         try
         {

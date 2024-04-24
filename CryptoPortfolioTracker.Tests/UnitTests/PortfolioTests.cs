@@ -46,11 +46,7 @@ public class PortfolioTests
                    "Parameters": [
                      {
                        "Name": "x_cg_pro_api_key",
-                       "Value": "12121"
-                     },
-                     {
-                       "Name": "vvvvvvvvv",
-                       "Value": true
+                       "Value": ""
                      }
                    ]
                  }
@@ -153,11 +149,7 @@ public class PortfolioTests
                    "Parameters": [
                      {
                        "Name": "x_cg_pro_api_key",
-                       "Value": "12121"
-                     },
-                     {
-                       "Name": "vvvvvvvvv",
-                       "Value": true
+                       "Value": ""
                      }
                    ]
                  }
