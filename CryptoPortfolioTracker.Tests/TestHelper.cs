@@ -77,14 +77,14 @@ public static class TestHelper
         return services.BuildServiceProvider();
     }
     
-    public static IHttpClientFactory CreateFakeHttpClientFactory(string content)
+    public static IHttpClientFactory CreateFakeHttpClientFactory(string responseContent)
     {
         var mockHttpClientFactory = new Mock<IHttpClientFactory>();
         
         var mockHttpResponse = new HttpResponseMessage()
         {
             StatusCode = HttpStatusCode.OK,
-            Content = new StringContent(content)
+            Content = new StringContent(responseContent)
         };
         
         var mockHttpMessageHandler = new Mock<HttpMessageHandler>();
