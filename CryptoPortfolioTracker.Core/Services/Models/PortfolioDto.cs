@@ -1,8 +1,17 @@
 namespace CryptoPortfolioTracker.Core.Services.Models;
 
+public class PortfolioItem
+{
+    public required string ItemId { get; set; }
+
+    public required Dictionary<string, decimal?> PriceByCurrencies { get; set; } = new();
+    
+    public Dictionary<string, decimal?> Values { get; set; } = new();
+}
+
 public class PortfolioDto
 {
-    public Dictionary<string, Dictionary<string, decimal?>> FullPortfolio { get; set; } = new();
+    public Dictionary<string, PortfolioItem> FullPortfolio { get; set; } = new();
 
     public Dictionary<string, decimal?> GetPortfolioByCurrencies()
     {
@@ -12,12 +21,12 @@ public class PortfolioDto
         }
         
         Dictionary<string, decimal?> pricesByCurrencies =
-            FullPortfolio.Values.SelectMany(c => c.Keys).Select(v => v).Distinct()
+            FullPortfolio.Values.SelectMany(c => c.PriceByCurrencies.Keys).Select(v => v).Distinct()
                 .Select(c => new KeyValuePair<string, decimal?>(c, 0)).ToDictionary();
 
         foreach (var v1 in FullPortfolio.Values)
         {
-            foreach (var v2 in v1)
+            foreach (var v2 in v1.Values)
             {
                 pricesByCurrencies[v2.Key] += v2.Value;
             }

@@ -50,10 +50,12 @@ public class PortfolioService(ICoinGeckoClient coinGeckoClient, IOptions<AppSett
             var portfolioDto = new PortfolioDto
             {
                 FullPortfolio = cryptoIds.Select(id =>
-                        new KeyValuePair<string, Dictionary<string, decimal?>>(id,
-                            _appSettings.Portfolio.Currencies.Select(c => new KeyValuePair<string, decimal?>(c, 0))
-                                .ToDictionary()))
-                    .ToDictionary()
+                        new KeyValuePair<string, PortfolioItem>(id, new PortfolioItem
+                        {
+                            ItemId = id,
+                            PriceByCurrencies = _appSettings.Portfolio.Currencies.Select(c => new KeyValuePair<string, decimal?>(c, 0)).ToDictionary(),
+                            Values = _appSettings.Portfolio.Currencies.Select(c => new KeyValuePair<string, decimal?>(c, 0)).ToDictionary()
+                        })).ToDictionary()
             };
             
             foreach (var crypto in _appSettings.Portfolio.CryptoPortfolio)
@@ -63,7 +65,8 @@ public class PortfolioService(ICoinGeckoClient coinGeckoClient, IOptions<AppSett
                 {
                     foreach (var currency in price.Currencies)
                     {
-                        portfolioDto.FullPortfolio[crypto.CoinId][currency.Name] += crypto.Quantity * currency.Price;
+                        portfolioDto.FullPortfolio[crypto.CoinId].PriceByCurrencies[currency.Name] = currency.Price;
+                        portfolioDto.FullPortfolio[crypto.CoinId].Values[currency.Name] += crypto.Quantity * currency.Price;
                     }
                 }
             }

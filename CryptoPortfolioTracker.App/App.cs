@@ -12,11 +12,11 @@ public class App(IPortfolioService portfolioService)
 
             foreach (var fullPortfolio in portfolioByCoin.FullPortfolio)
             {
-                Console.WriteLine($"** {fullPortfolio.Key}");
-                foreach (var curr in fullPortfolio.Value)
+                Console.WriteLine();
+                Console.WriteLine($"** {fullPortfolio.Key} - {fullPortfolio.Value.PriceByCurrencies["usd"]}$");
+                foreach (var curr in fullPortfolio.Value.Values)
                 {
                     Console.WriteLine($"   {curr.Key}: {curr.Value}");
-                    Console.WriteLine();
                 }
             }
 
