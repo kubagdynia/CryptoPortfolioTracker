@@ -223,6 +223,7 @@ public class PortfolioTests
         result.FullPortfolio["bitcoin"].Values.Should().HaveCount(2);
         result.FullPortfolio["bitcoin"].Values.Should().ContainKey("usd");
         result.FullPortfolio["bitcoin"].Values.Should().ContainKey("pln");
+        result.FullPortfolio["bitcoin"].Quantity.Should().BeApproximately(1.21m, 0);
         result.FullPortfolio["bitcoin"].Values["usd"].Should().NotBeNull();
         result.FullPortfolio["bitcoin"].Values["usd"]!.Value.Should().BeApproximately(84759.29m, 0);
         result.FullPortfolio["bitcoin"].Values["pln"].Should().NotBeNull();
@@ -232,6 +233,7 @@ public class PortfolioTests
         result.FullPortfolio["ethereum"].Values.Should().HaveCount(2);
         result.FullPortfolio["ethereum"].Values.Should().ContainKey("usd");
         result.FullPortfolio["ethereum"].Values.Should().ContainKey("pln");
+        result.FullPortfolio["ethereum"].Quantity.Should().BeApproximately(2.01895m, 0);
         result.FullPortfolio["ethereum"].Values["usd"].Should().NotBeNull();
         result.FullPortfolio["ethereum"].Values["usd"]!.Value.Should().BeApproximately(7146.0533355m, 0);
         result.FullPortfolio["ethereum"].Values["pln"].Should().NotBeNull();

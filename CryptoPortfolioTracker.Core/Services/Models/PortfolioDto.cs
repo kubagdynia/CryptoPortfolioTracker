@@ -3,6 +3,8 @@ namespace CryptoPortfolioTracker.Core.Services.Models;
 public class PortfolioItem
 {
     public required string ItemId { get; set; }
+    
+    public required decimal Quantity { get; set; }
 
     public required Dictionary<string, decimal?> PriceByCurrencies { get; set; } = new();
     

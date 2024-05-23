@@ -13,7 +13,7 @@ public class App(IPortfolioService portfolioService)
             foreach (var fullPortfolio in portfolioByCoin.FullPortfolio)
             {
                 Console.WriteLine();
-                Console.WriteLine($"** {fullPortfolio.Key} - {fullPortfolio.Value.PriceByCurrencies["usd"]}$");
+                Console.WriteLine($"** {fullPortfolio.Key} ({fullPortfolio.Value.Quantity}) - {fullPortfolio.Value.PriceByCurrencies["usd"]}$");
                 foreach (var curr in fullPortfolio.Value.Values)
                 {
                     Console.WriteLine($"   {curr.Key}: {curr.Value}");

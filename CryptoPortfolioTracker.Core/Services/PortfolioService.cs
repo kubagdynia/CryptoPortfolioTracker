@@ -53,6 +53,7 @@ public class PortfolioService(ICoinGeckoClient coinGeckoClient, IOptions<AppSett
                         new KeyValuePair<string, PortfolioItem>(id, new PortfolioItem
                         {
                             ItemId = id,
+                            Quantity = _appSettings.Portfolio.CryptoPortfolio.Where(c => c.CoinId.Equals(id, StringComparison.OrdinalIgnoreCase)).Sum(c => c.Quantity),
                             PriceByCurrencies = _appSettings.Portfolio.Currencies.Select(c => new KeyValuePair<string, decimal?>(c, 0)).ToDictionary(),
                             Values = _appSettings.Portfolio.Currencies.Select(c => new KeyValuePair<string, decimal?>(c, 0)).ToDictionary()
                         })).ToDictionary()
