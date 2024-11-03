@@ -9,7 +9,7 @@ var services = new ServiceCollection();
 
 ConfigureServices();
 
-RunningOptions runningOptions = CheckCommandLineOptions(args); 
+var runningOptions = CheckCommandLineOptions(args); 
 
 // create service provider
 var serviceProvider = services.BuildServiceProvider();
@@ -46,7 +46,7 @@ void ConfigureServices()
 
 static RunningOptions CheckCommandLineOptions(string[] args)
 {
-    RunningOptions options = new RunningOptions();
+    var options = new RunningOptions();
     Parser.Default.ParseArguments<RunningOptions>(args)
         .WithParsed(opt =>
         {
