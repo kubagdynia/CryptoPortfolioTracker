@@ -213,7 +213,7 @@ public class PortfolioTests
         
         var portfolioService = serviceProvider.GetRequiredService<IPortfolioService>();
 
-        PortfolioDto result = await portfolioService.GetPortfolioByCoinId();
+        var result = await portfolioService.GetPortfolioByCoinId();
 
         result.FullPortfolio.Should().HaveCount(2);
         result.FullPortfolio.Should().ContainKey("bitcoin");

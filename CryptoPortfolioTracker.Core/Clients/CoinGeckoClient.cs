@@ -10,7 +10,8 @@ public class CoinGeckoClient : BaseClient, ICoinGeckoClient
     private readonly Uri _apiEndpoint;
     private readonly Dictionary<string, object> _additionalParameters;
 
-    public CoinGeckoClient(IHttpClientFactory clientFactory, ILogger<CoinGeckoClient> logger, IOptions<AppSettings> settings) : base(clientFactory, logger)
+    public CoinGeckoClient(IHttpClientFactory clientFactory, ILogger<CoinGeckoClient> logger,
+        IOptions<AppSettings> settings) : base(clientFactory, logger)
     {
         var appSettings = settings.Value;
         var selectedApi = appSettings.GetSelectedApi();

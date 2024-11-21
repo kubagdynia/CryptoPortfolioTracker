@@ -17,7 +17,7 @@ public class ConfigurationTests
     }
 
     [Test]
-    public void FreeApi_Should_Be_Selected_Correclty()
+    public void FreeApi_Should_Be_Selected_Correctly()
     {
         var config = """
          {
@@ -42,11 +42,11 @@ public class ConfigurationTests
         var httpClientFactory = TestHelper.CreateFakeHttpClientFactory(responseContent: "{}");
         var serviceProvider = TestHelper.CreateServiceProvider(httpClientFactory, config);
 
-        AppSettings appSettings = serviceProvider.GetRequiredService<IOptions<AppSettings>>().Value;
+        var appSettings = serviceProvider.GetRequiredService<IOptions<AppSettings>>().Value;
 
         appSettings.ApiKeys.Should().HaveCount(1);
 
-        Api selectedApi = appSettings.GetSelectedApi();
+        var selectedApi = appSettings.GetSelectedApi();
         selectedApi.Name.Should().BeEquivalentTo("CoinGecko-Free");
         selectedApi.Url.Should().BeEquivalentTo("https://api.coingecko.com/api/v3/");
         selectedApi.GetParametersAsDictionary().Should().HaveCount(0);
@@ -57,7 +57,7 @@ public class ConfigurationTests
     }
     
     [Test]
-    public void DemoApi_Should_Be_Selected_Correclty()
+    public void DemoApi_Should_Be_Selected_Correctly()
     {
         var config = """
          {
@@ -104,17 +104,17 @@ public class ConfigurationTests
         var httpClientFactory = TestHelper.CreateFakeHttpClientFactory(responseContent: "{}");
         var serviceProvider = TestHelper.CreateServiceProvider(httpClientFactory, config);
 
-        AppSettings appSettings = serviceProvider.GetRequiredService<IOptions<AppSettings>>().Value;
+        var appSettings = serviceProvider.GetRequiredService<IOptions<AppSettings>>().Value;
 
         appSettings.ApiKeys.Should().HaveCount(3);
 
-        Api selectedApi = appSettings.GetSelectedApi();
+        var selectedApi = appSettings.GetSelectedApi();
         selectedApi.Name.Should().BeEquivalentTo("CoinGecko-DemoApi");
         selectedApi.Url.Should().BeEquivalentTo("https://api.coingecko.com/api/v3/");
         selectedApi.GetParametersAsDictionary().Should().HaveCount(1);
         selectedApi.Parameters.Should().NotBeEmpty();
         selectedApi.GetParametersAsDictionary().Should().NotBeEmpty();
-        Dictionary<string, object> parameters = selectedApi.GetParametersAsDictionary();
+        var parameters = selectedApi.GetParametersAsDictionary();
         parameters["x_cg_demo_api_key"].Should().BeEquivalentTo("demotestapikey");
         
         selectedApi.Selected.Should().BeTrue();
@@ -123,7 +123,7 @@ public class ConfigurationTests
     }
     
     [Test]
-    public void ProApi_Should_Be_Selected_Correclty()
+    public void ProApi_Should_Be_Selected_Correctly()
     {
         var config = """
          {
@@ -170,17 +170,17 @@ public class ConfigurationTests
         var httpClientFactory = TestHelper.CreateFakeHttpClientFactory(responseContent: "{}");
         var serviceProvider = TestHelper.CreateServiceProvider(httpClientFactory, config);
 
-        AppSettings appSettings = serviceProvider.GetRequiredService<IOptions<AppSettings>>().Value;
+        var appSettings = serviceProvider.GetRequiredService<IOptions<AppSettings>>().Value;
 
         appSettings.ApiKeys.Should().HaveCount(3);
 
-        Api selectedApi = appSettings.GetSelectedApi();
+        var selectedApi = appSettings.GetSelectedApi();
         selectedApi.Name.Should().BeEquivalentTo("CoinGecko-ProApi");
         selectedApi.Url.Should().BeEquivalentTo("https://pro-api.coingecko.com/api/v3/");
         selectedApi.GetParametersAsDictionary().Should().HaveCount(1);
         selectedApi.Parameters.Should().NotBeEmpty();
         selectedApi.GetParametersAsDictionary().Should().NotBeEmpty();
-        Dictionary<string, object> parameters = selectedApi.GetParametersAsDictionary();
+        var parameters = selectedApi.GetParametersAsDictionary();
         parameters["x_cg_pro_api_key"].Should().BeEquivalentTo("protestapikey");
         
         selectedApi.Selected.Should().BeTrue();

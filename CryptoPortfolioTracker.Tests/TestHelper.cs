@@ -44,7 +44,7 @@ public static class TestHelper
         
         var loggerMock = new Mock<ILogger<CoinGeckoClient>>();
         
-        services.AddTransient<ICoinGeckoClient, CoinGeckoClient>(x =>
+        services.AddTransient<ICoinGeckoClient, CoinGeckoClient>(_ =>
             new CoinGeckoClient(httpClientFactory, loggerMock.Object, Options.Create(appConfig.Get<AppSettings>()!)));
         
         services.AddTransient<IPortfolioService, PortfolioService>();

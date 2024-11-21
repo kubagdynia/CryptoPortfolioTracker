@@ -2,7 +2,7 @@ using CryptoPortfolioTracker.Core.Exceptions;
 
 namespace CryptoPortfolioTracker.Core.Configuration;
 
-public class AppSettings
+public record AppSettings
 {
     public const string AppConfigSectionName = "App";
 
@@ -21,7 +21,7 @@ public class AppSettings
     }
 }
 
-public class Api
+public record Api
 {
     public string Name { get; set; }
 
@@ -42,21 +42,21 @@ public class Api
     }
 }
 
-public class Parameter
+public record Parameter
 {
     public string Name { get; set; }
     
     public object Value { get; set; }
 }
 
-public class Portfolio
+public record Portfolio
 {
     public string[]? Currencies { get; set; }
 
     public List<Crypto>? CryptoPortfolio { get; set; }
 }
 
-public class Crypto
+public record Crypto
 {
     public required string CoinId { get; set; }
 

@@ -12,70 +12,71 @@ public class PortfolioService(ICoinGeckoClient coinGeckoClient, IOptions<AppSett
 
     public async Task<Dictionary<string, decimal?>> GetPortfolio()
     {
-        if (_appSettings.Portfolio.CryptoPortfolio is not null && _appSettings.Portfolio.Currencies is not null)
-        {
-            var cryptoIds = _appSettings.Portfolio.CryptoPortfolio.Select(c => c.CoinId).ToArray();
-            
-            var prices = await coinGeckoClient.GetSimplePrice(cryptoIds, _appSettings.Portfolio.Currencies);
-            
-            var portfolio =
-                _appSettings.Portfolio.Currencies.Select(c => new KeyValuePair<string, decimal?>(c, 0)).ToDictionary();
-            
-            foreach (var crypto in _appSettings.Portfolio.CryptoPortfolio)
-            {
-                var price = GetPriceByCoinId(crypto.CoinId, prices);
-                if (price is not null)
-                {
-                    foreach (var currency in price.Currencies)
-                    {
-                        portfolio[currency.Name] += crypto.Quantity * currency.Price;
-                    }
-                }
-            }
-
-            return portfolio;
-        }
+        if (_appSettings.Portfolio.CryptoPortfolio is null || _appSettings.Portfolio.Currencies is null)
+            return await Task.FromResult(new Dictionary<string, decimal?>());
         
-        return await Task.FromResult(new Dictionary<string, decimal?>());
+        var cryptoIds = _appSettings.Portfolio.CryptoPortfolio.Select(c => c.CoinId).ToArray();
+            
+        var prices = await coinGeckoClient.GetSimplePrice(cryptoIds, _appSettings.Portfolio.Currencies);
+
+        var portfolio = _appSettings.Portfolio.Currencies
+            .Select(c => new KeyValuePair<string, decimal?>(c, 0))
+            .ToDictionary();
+            
+        foreach (var crypto in _appSettings.Portfolio.CryptoPortfolio)
+        {
+            var price = GetPriceByCoinId(crypto.CoinId, prices);
+            if (price is null) continue;
+            
+            foreach (var currency in price.Currencies)
+            {
+                portfolio[currency.Name] += crypto.Quantity * currency.Price;
+            }
+        }
+
+        return portfolio;
+
     }
 
     public async Task<PortfolioDto> GetPortfolioByCoinId()
     {
-        if (_appSettings.Portfolio.CryptoPortfolio is not null && _appSettings.Portfolio.Currencies is not null)
+        if (_appSettings.Portfolio.CryptoPortfolio is null || _appSettings.Portfolio.Currencies is null)
+            return await Task.FromResult(new PortfolioDto());
+        
+        var cryptoIds = _appSettings.Portfolio.CryptoPortfolio.Select(c => c.CoinId).ToArray();
+            
+        var prices = await coinGeckoClient.GetSimplePrice(cryptoIds, _appSettings.Portfolio.Currencies);
+
+        var portfolioDto = new PortfolioDto
         {
-            var cryptoIds = _appSettings.Portfolio.CryptoPortfolio.Select(c => c.CoinId).ToArray();
-            
-            var prices = await coinGeckoClient.GetSimplePrice(cryptoIds, _appSettings.Portfolio.Currencies);
-
-            var portfolioDto = new PortfolioDto
-            {
-                FullPortfolio = cryptoIds.Select(id =>
-                        new KeyValuePair<string, PortfolioItem>(id, new PortfolioItem
-                        {
-                            ItemId = id,
-                            Quantity = _appSettings.Portfolio.CryptoPortfolio.Where(c => c.CoinId.Equals(id, StringComparison.OrdinalIgnoreCase)).Sum(c => c.Quantity),
-                            PriceByCurrencies = _appSettings.Portfolio.Currencies.Select(c => new KeyValuePair<string, decimal?>(c, 0)).ToDictionary(),
-                            Values = _appSettings.Portfolio.Currencies.Select(c => new KeyValuePair<string, decimal?>(c, 0)).ToDictionary()
-                        })).ToDictionary()
-            };
-            
-            foreach (var crypto in _appSettings.Portfolio.CryptoPortfolio)
-            {
-                var price = GetPriceByCoinId(crypto.CoinId, prices);
-                if (price is not null)
+            FullPortfolio = cryptoIds.Select(id =>
+                new KeyValuePair<string, PortfolioItem>(id, new PortfolioItem
                 {
-                    foreach (var currency in price.Currencies)
-                    {
-                        portfolioDto.FullPortfolio[crypto.CoinId].PriceByCurrencies[currency.Name] = currency.Price;
-                        portfolioDto.FullPortfolio[crypto.CoinId].Values[currency.Name] += crypto.Quantity * currency.Price;
-                    }
-                }
+                    ItemId = id,
+                    Quantity = _appSettings.Portfolio.CryptoPortfolio
+                        .Where(c => c.CoinId.Equals(id, StringComparison.OrdinalIgnoreCase))
+                        .Sum(c => c.Quantity),
+                    PriceByCurrencies = _appSettings.Portfolio.Currencies
+                        .Select(c => new KeyValuePair<string, decimal?>(c, 0)).ToDictionary(),
+                    Values = _appSettings.Portfolio.Currencies
+                        .Select(c => new KeyValuePair<string, decimal?>(c, 0)).ToDictionary()
+                })).ToDictionary()
+        };
+            
+        foreach (var crypto in _appSettings.Portfolio.CryptoPortfolio)
+        {
+            var price = GetPriceByCoinId(crypto.CoinId, prices);
+            if (price is null) continue;
+            
+            foreach (var currency in price.Currencies)
+            {
+                portfolioDto.FullPortfolio[crypto.CoinId].PriceByCurrencies[currency.Name] = currency.Price;
+                portfolioDto.FullPortfolio[crypto.CoinId].Values[currency.Name] += crypto.Quantity * currency.Price;
             }
-
-            return portfolioDto;
         }
 
-        return await Task.FromResult(new PortfolioDto());
+        return portfolioDto;
+
     }
     
     private PriceId? GetPriceByCoinId(string coinId, IList<PriceId> prices)

@@ -8,13 +8,13 @@ public static class CurrencyExtensions
     {
         ArgumentNullException.ThrowIfNull(currencies);
         
-        return currencies?.FirstOrDefault();
+        return currencies.FirstOrDefault();
     }
     
     public static Currency? Currency(this IList<Currency> currencies, string name)
     {
         ArgumentNullException.ThrowIfNull(currencies);
         
-        return currencies?.FirstOrDefault(c => c.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+        return currencies.FirstOrDefault(c => c.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
     }
 }
