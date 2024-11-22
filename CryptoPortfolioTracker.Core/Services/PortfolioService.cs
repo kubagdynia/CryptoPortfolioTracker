@@ -10,8 +10,9 @@ public class PortfolioService(ICoinGeckoClient coinGeckoClient, IOptions<AppSett
 {
     private readonly AppSettings _appSettings = settings.Value;
 
-    public async Task<Dictionary<string, decimal?>> GetPortfolio()
+    public async Task<Dictionary<string, decimal?>> GetPortfolioByCurrencies()
     {
+        // If the portfolio is not set, return an empty dictionary
         if (_appSettings.Portfolio.CryptoPortfolio is null || _appSettings.Portfolio.Currencies is null)
             return await Task.FromResult(new Dictionary<string, decimal?>());
         

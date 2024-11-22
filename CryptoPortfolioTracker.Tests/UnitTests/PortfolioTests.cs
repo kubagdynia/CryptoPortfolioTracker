@@ -110,7 +110,7 @@ public class PortfolioTests
         
         var portfolioService = serviceProvider.GetRequiredService<IPortfolioService>();
 
-        var result = await portfolioService.GetPortfolio();
+        var result = await portfolioService.GetPortfolioByCurrencies();
 
         result.Should().HaveCount(2);
         result["usd"].Should().BeApproximately(91838.27m, 0);

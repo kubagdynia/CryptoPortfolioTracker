@@ -30,7 +30,7 @@ public class App(IPortfolioService portfolioService)
         }
         else
         {
-            var portfolioByCurrencies = await portfolioService.GetPortfolio();
+            var portfolioByCurrencies = await portfolioService.GetPortfolioByCurrencies();
             foreach (var curr in portfolioByCurrencies)
             {
                 Console.WriteLine($"{curr.Key}: {curr.Value}");
