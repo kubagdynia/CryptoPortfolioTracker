@@ -40,7 +40,7 @@ void ConfigureServices()
         builder.AddSerilog();
     });
     
-    services.RegisterCore(configuration);
+    services.RegisterCryptoPortfolioTracker(configuration);
     services.AddTransient<App>();
 }
 

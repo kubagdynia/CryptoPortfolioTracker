@@ -11,7 +11,7 @@ namespace CryptoPortfolioTracker.Core.Extensions;
 
 public static class ServiceCollectionExtensions
 {
-    public static void RegisterCore(this IServiceCollection services, IConfiguration configuration,
+    public static AppSettings RegisterSettings(this IServiceCollection services, IConfiguration configuration,
         string appConfigSectionName = AppSettings.AppConfigSectionName)
     {
         var appConfig = configuration.GetSection(appConfigSectionName);
@@ -19,10 +19,54 @@ public static class ServiceCollectionExtensions
         if (!appConfig.Exists())
         {
             // Create default configuration
-            appConfig = DefaultAppConfig.GetDefaultAppConfig(appConfigSectionName);
+            var defaultConfig = DefaultAppConfig.GetDefaultConfig();
+            
+            services.Configure<AppSettings>(opt =>
+            {
+                opt.Portfolio = defaultConfig.Portfolio;
+                opt.ApiKeys = defaultConfig.ApiKeys;
+            });
+            return defaultConfig;
         }
 
         services.Configure<AppSettings>(appConfig);
+        return appConfig.Get<AppSettings>()!;
+    }
+
+    public static void RegisterCryptoPortfolioTracker(this IServiceCollection services, IConfiguration configuration,
+        string appConfigSectionName = AppSettings.AppConfigSectionName)
+    {
+        var appConfig = configuration.GetSection(appConfigSectionName);
+
+        if (!appConfig.Exists())
+        {
+            // Create default configuration
+            var defaultConfig = DefaultAppConfig.GetDefaultConfig();
+            
+            services.Configure<AppSettings>(opt =>
+            {
+                opt.Portfolio = defaultConfig.Portfolio;
+                opt.ApiKeys = defaultConfig.ApiKeys;
+            });
+        }
+        else
+        {
+            services.Configure<AppSettings>(appConfig);
+        }
+        
+        services.AddTransient<ICoinGeckoClient, CoinGeckoClient>();
+        services.AddTransient<IPortfolioService, PortfolioService>();
+        
+        AddHttpClient(services);
+    }
+    
+    public static void RegisterCryptoPortfolioTracker(this IServiceCollection services, AppSettings appSettings)
+    {
+        services.Configure<AppSettings>(opt =>
+        {
+            opt.Portfolio = appSettings.Portfolio;
+            opt.ApiKeys = appSettings.ApiKeys.Count != 0 ? appSettings.ApiKeys : DefaultAppConfig.GetDefaultApiKeys();
+        });
 
         services.AddTransient<ICoinGeckoClient, CoinGeckoClient>();
         services.AddTransient<IPortfolioService, PortfolioService>();

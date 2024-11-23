@@ -1,6 +1,5 @@
 using System.Net;
 using CryptoPortfolioTracker.Core.Clients;
-using CryptoPortfolioTracker.Core.Configuration;
 using CryptoPortfolioTracker.Core.Extensions;
 using CryptoPortfolioTracker.Core.Services;
 using Microsoft.Extensions.Configuration;
@@ -30,22 +29,13 @@ public static class TestHelper
             using var mem = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(config));
             configuration = new ConfigurationBuilder().AddJsonStream(mem).Build();
         }
-        
-        // Create an empty configuration 
-        var appConfig = configuration.GetSection(AppSettings.AppConfigSectionName);
 
-        if (!appConfig.Exists())
-        {
-            // Create a default configuration
-            appConfig = DefaultAppConfig.GetDefaultAppConfig(AppSettings.AppConfigSectionName);
-        }
-        
-        services.Configure<AppSettings>(appConfig);
+        var appConfig = services.RegisterSettings(configuration);
         
         var loggerMock = new Mock<ILogger<CoinGeckoClient>>();
         
         services.AddTransient<ICoinGeckoClient, CoinGeckoClient>(_ =>
-            new CoinGeckoClient(httpClientFactory, loggerMock.Object, Options.Create(appConfig.Get<AppSettings>()!)));
+            new CoinGeckoClient(httpClientFactory, loggerMock.Object, Options.Create(appConfig)));
         
         services.AddTransient<IPortfolioService, PortfolioService>();
         
@@ -72,7 +62,7 @@ public static class TestHelper
             builder.AddSerilog();
         });
         
-        services.RegisterCore(configuration);
+        services.RegisterCryptoPortfolioTracker(configuration);
         
         return services.BuildServiceProvider();
     }
