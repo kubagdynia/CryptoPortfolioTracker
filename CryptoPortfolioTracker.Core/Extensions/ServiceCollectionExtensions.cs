@@ -3,6 +3,8 @@ using CryptoPortfolioTracker.Core.Configuration;
 using CryptoPortfolioTracker.Core.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Polly;
 using Polly.Timeout;
 using Polly.Extensions.Http;
@@ -33,7 +35,7 @@ public static class ServiceCollectionExtensions
         return appConfig.Get<AppSettings>()!;
     }
 
-    public static void RegisterCryptoPortfolioTracker(this IServiceCollection services, IConfiguration configuration,
+    public static IServiceCollection RegisterCryptoPortfolioTracker(this IServiceCollection services, IConfiguration configuration,
         string appConfigSectionName = AppSettings.AppConfigSectionName)
     {
         var appConfig = configuration.GetSection(appConfigSectionName);
@@ -58,9 +60,11 @@ public static class ServiceCollectionExtensions
         services.AddTransient<IPortfolioService, PortfolioService>();
         
         AddHttpClient(services);
+
+        return services;
     }
     
-    public static void RegisterCryptoPortfolioTracker(this IServiceCollection services, AppSettings appSettings)
+    public static IServiceCollection RegisterCryptoPortfolioTracker(this IServiceCollection services, AppSettings appSettings)
     {
         services.Configure<AppSettings>(opt =>
         {
@@ -72,7 +76,17 @@ public static class ServiceCollectionExtensions
         services.AddTransient<IPortfolioService, PortfolioService>();
         
         AddHttpClient(services);
+
+        return services;
     }
+
+    public static IServiceCollection RegisterCoinGeckoClient(
+        this IServiceCollection services,
+        IHttpClientFactory httpClientFactory,
+        ILogger<ICoinGeckoClient> logger,
+        AppSettings settings)
+        => services.AddTransient<ICoinGeckoClient>(_ =>
+            new CoinGeckoClient(httpClientFactory, logger, Options.Create(settings)));
     
     private static void AddHttpClient(IServiceCollection services)
     {

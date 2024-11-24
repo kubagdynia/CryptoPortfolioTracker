@@ -3,12 +3,11 @@ using System.Net.Http.Json;
 using System.Text.Json;
 using CryptoPortfolioTracker.Core.Exceptions;
 using CryptoPortfolioTracker.Core.Extensions;
-using Microsoft.Extensions.Logging;
 using Polly.Timeout;
 
 namespace CryptoPortfolioTracker.Core.Clients;
 
-public abstract class BaseClient(IHttpClientFactory clientFactory, ILogger<BaseClient> logger)
+internal abstract class BaseClient(IHttpClientFactory clientFactory)
 {
     protected abstract Uri GetApiEndpoint();
 
@@ -16,6 +15,8 @@ public abstract class BaseClient(IHttpClientFactory clientFactory, ILogger<BaseC
 
     protected Uri CreateUrl(string path)
         => CreateUrl(path, new Dictionary<string, object>());
+
+    protected abstract void LogError(Exception ex, string message);
     
     protected Uri CreateUrl(string path, Dictionary<string, object> parameters)
     {
@@ -65,12 +66,12 @@ public abstract class BaseClient(IHttpClientFactory clientFactory, ILogger<BaseC
                 }
                 catch (NotSupportedException ex) // When content type is not valid
                 {
-                    logger.LogError(ex, $"The content type is not supported.");
+                    LogError(ex, $"The content type is not supported.");
                     throw;
                 }
                 catch (JsonException ex) // Invalid JSON
                 {
-                    logger.LogError(ex, $"Invalid JSON.");
+                    LogError(ex, $"Invalid JSON.");
                     throw;
                 }
             }
@@ -80,17 +81,17 @@ public abstract class BaseClient(IHttpClientFactory clientFactory, ILogger<BaseC
         }
         catch (TimeoutRejectedException ex)
         {
-            logger.LogError(ex, $"Timeout has occurred.");
+            LogError(ex, $"Timeout has occurred.");
             throw;
         }
         catch (ExternalApiException ex)
         {
-            logger.LogError(ex, $"There was an error in the response from the external API: {ex.Status}");
+            LogError(ex, $"There was an error in the response from the external API: {ex.Status}");
             throw;
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, $"An error occurred.");
+            LogError(ex, $"An error occurred.");
             throw;
         }
     }

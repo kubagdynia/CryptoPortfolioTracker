@@ -5,14 +5,16 @@ using Microsoft.Extensions.Options;
 
 namespace CryptoPortfolioTracker.Core.Clients;
 
-public class CoinGeckoClient : BaseClient, ICoinGeckoClient
+internal class CoinGeckoClient : BaseClient, ICoinGeckoClient
 {
+    private readonly ILogger<ICoinGeckoClient> _logger;
     private readonly Uri _apiEndpoint;
     private readonly Dictionary<string, object> _additionalParameters;
 
-    public CoinGeckoClient(IHttpClientFactory clientFactory, ILogger<CoinGeckoClient> logger,
-        IOptions<AppSettings> settings) : base(clientFactory, logger)
+    public CoinGeckoClient(IHttpClientFactory clientFactory, ILogger<ICoinGeckoClient> logger,
+        IOptions<AppSettings> settings) : base(clientFactory)
     {
+        _logger = logger;
         var appSettings = settings.Value;
         var selectedApi = appSettings.GetSelectedApi();
         _apiEndpoint = new Uri(selectedApi.Url);
@@ -24,6 +26,9 @@ public class CoinGeckoClient : BaseClient, ICoinGeckoClient
 
     protected override Dictionary<string, object> GetAdditionalParameters()
         => _additionalParameters;
+
+    protected override void LogError(Exception ex, string message)
+        => _logger.LogError(ex, message);
 
     public async Task<Ping?> GetPingAsync(CancellationToken ct = default)
     {
