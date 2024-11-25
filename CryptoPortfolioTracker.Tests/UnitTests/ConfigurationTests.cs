@@ -240,7 +240,7 @@ public class ConfigurationTests
     }
     
     [Test]
-    public void No_Api_Should_Throw_An_Exception()
+    public void No_Api_Should_Not_Throw_An_Exception()
     {
       var config = """
                    {
@@ -258,6 +258,8 @@ public class ConfigurationTests
       var httpClientFactory = TestHelper.CreateFakeHttpClientFactory(responseContent: "{}");
       var serviceProvider = TestHelper.CreateServiceProvider(httpClientFactory, config);
 
-      Assert.Throws<ConfigurationException>(() => serviceProvider.GetRequiredService<IPortfolioService>());
+      // Acr & Assert
+      Assert.DoesNotThrow(() => serviceProvider.GetRequiredService<IPortfolioService>(),
+        "Service should be resolved without throwing an exception.");
     }
 }

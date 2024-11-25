@@ -30,9 +30,35 @@ public static class ServiceCollectionExtensions
             });
             return defaultConfig;
         }
+        
+        var settings = appConfig.Get<AppSettings>()!;
+        
+        if (settings.ApiKeys.Count == 0)
+        {
+            settings.ApiKeys = DefaultAppConfig.GetDefaultApiKeys();
+        }
+        
+        services.Configure<AppSettings>(opt =>
+        {
+            opt.Portfolio = settings.Portfolio;
+            opt.ApiKeys = settings.ApiKeys;
+        });
+        return settings;
+    }
+    
+    public static AppSettings RegisterSettings(this IServiceCollection services, AppSettings settings)
+    {
+        services.Configure<AppSettings>(opt =>
+        {
+            opt.Portfolio = settings.Portfolio;
+            opt.ApiKeys = settings.ApiKeys.Count != 0 ? settings.ApiKeys : DefaultAppConfig.GetDefaultApiKeys();
+        });
 
-        services.Configure<AppSettings>(appConfig);
-        return appConfig.Get<AppSettings>()!;
+        return new AppSettings
+        {
+            Portfolio = settings.Portfolio,
+            ApiKeys = settings.ApiKeys.Count != 0 ? settings.ApiKeys : DefaultAppConfig.GetDefaultApiKeys()
+        };
     }
 
     public static IServiceCollection RegisterCryptoPortfolioTracker(this IServiceCollection services, IConfiguration configuration,
