@@ -50,4 +50,15 @@ foreach (var value in portfolioByCurrencies)
 // usd: xxxxx
 // pln: xxxxx
 
+// get portfolio by coin id
+var portfolioByCoinId = await portfolioService.GetPortfolioByCoinId();
 
+// print portfolio by coin id
+foreach (var value in portfolioByCoinId.FullPortfolio)
+{
+    Console.WriteLine($"{value.Key}: {value.Value.Quantity} - [USD: {value.Value.Values["usd"]!.Value }, PLN: {value.Value.Values["pln"]!.Value}]");
+}
+
+// output:
+// bitcoin: 1.21 - [USD: xxxxx, PLN: xxxxx]
+// ethereum: 2 - [USD: xxxxx, PLN: xxxxx]
