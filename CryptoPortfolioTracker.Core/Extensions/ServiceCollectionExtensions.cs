@@ -61,6 +61,22 @@ public static class ServiceCollectionExtensions
         };
     }
 
+    public static IServiceCollection RegisterCryptoPortfolioTracker(this IServiceCollection services)
+    {
+        // Create default configuration
+        var defaultConfig = DefaultAppConfig.GetDefaultConfig();
+            
+        services.Configure<AppSettings>(opt =>
+        {
+            opt.Portfolio = defaultConfig.Portfolio;
+            opt.ApiKeys = defaultConfig.ApiKeys;
+        });
+        
+        RegisterServices(services);
+
+        return services;
+    }
+
     public static IServiceCollection RegisterCryptoPortfolioTracker(this IServiceCollection services, IConfiguration configuration,
         string appConfigSectionName = AppSettings.AppConfigSectionName)
     {
@@ -82,10 +98,7 @@ public static class ServiceCollectionExtensions
             services.Configure<AppSettings>(appConfig);
         }
         
-        services.AddTransient<ICoinGeckoClient, CoinGeckoClient>();
-        services.AddTransient<IPortfolioService, PortfolioService>();
-        
-        AddHttpClient(services);
+        RegisterServices(services);
 
         return services;
     }
@@ -98,10 +111,7 @@ public static class ServiceCollectionExtensions
             opt.ApiKeys = appSettings.ApiKeys.Count != 0 ? appSettings.ApiKeys : DefaultAppConfig.GetDefaultApiKeys();
         });
 
-        services.AddTransient<ICoinGeckoClient, CoinGeckoClient>();
-        services.AddTransient<IPortfolioService, PortfolioService>();
-        
-        AddHttpClient(services);
+        RegisterServices(services);
 
         return services;
     }
@@ -131,6 +141,14 @@ public static class ServiceCollectionExtensions
         services.AddHttpClient("HttpClient")
             .AddPolicyHandler(GetRetryPolicy())
             .AddPolicyHandler(Policy.TimeoutAsync<HttpResponseMessage>(5));
+    }
+    
+    private static void RegisterServices(IServiceCollection services)
+    {
+        services.AddTransient<ICoinGeckoClient, CoinGeckoClient>();
+        services.AddTransient<IPortfolioService, PortfolioService>();
+        
+        AddHttpClient(services);
     }
     
     private static IAsyncPolicy<HttpResponseMessage> GetRetryPolicy(int seconds = 5)

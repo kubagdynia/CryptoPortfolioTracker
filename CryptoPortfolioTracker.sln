@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CryptoPortfolioTracker.Test
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CryptoPortfolioTracker.SimpleApp", "CryptoPortfolioTracker.SimpleApp\CryptoPortfolioTracker.SimpleApp.csproj", "{80C6F272-4494-4F5C-A317-EA4918359E6A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CryptoPortfolioTracker.WebApi", "CryptoPortfolioTracker.WebApi\CryptoPortfolioTracker.WebApi.csproj", "{7FE1CD93-2DCF-4487-9354-440418558D4A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,5 +38,9 @@ Global
 		{80C6F272-4494-4F5C-A317-EA4918359E6A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{80C6F272-4494-4F5C-A317-EA4918359E6A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{80C6F272-4494-4F5C-A317-EA4918359E6A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7FE1CD93-2DCF-4487-9354-440418558D4A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7FE1CD93-2DCF-4487-9354-440418558D4A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7FE1CD93-2DCF-4487-9354-440418558D4A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7FE1CD93-2DCF-4487-9354-440418558D4A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
